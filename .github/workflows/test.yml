@@ -1,0 +1,19 @@
+name: test-live-page
+on: [workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-save puppeteer-core @puppeteer/browsers
+      - run: echo "CHROME_PATH=$(npx @puppeteer/browsers install chrome@stable --format '{{path}}')" >> "$GITHUB_ENV"
+      - run: node test/live.mjs
+        env:
+          PAGE_URL: https://jivraj-18.github.io/slide-motion-gallery/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: shots, path: shots }
