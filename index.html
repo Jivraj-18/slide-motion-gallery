@@ -132,7 +132,7 @@ footer a{color:var(--accent)}
       <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Scrub through the transition">
       <label>Duration <input type="range" id="dur" min="0.4" max="2.5" step="0.1" value="1.2"><output id="durOut">1.2 s</output></label>
       <button id="tour" aria-pressed="false">Auto tour</button>
-      <button id="full">Present ⛶</button>
+      <button id="full">Present</button>
     </div>
   </section>
 
@@ -296,9 +296,10 @@ function paintDOM(slide, canvas) {
   g.clearRect(0, 0, canvas.width, canvas.height);
   (function visit(el) {
     const cs = getComputedStyle(el), r = el.getBoundingClientRect();
-    if (cs.backgroundColor !== "rgba(0, 0, 0, 0)") {
+    if (el === slide) { g.fillStyle = cs.backgroundColor; g.fillRect(0, 0, canvas.width, canvas.height); }   // no hairline from rounding
+    else if (cs.backgroundColor !== "rgba(0, 0, 0, 0)") {
       const raw = cs.borderTopLeftRadius;
-      box(r, el === slide ? 0 : Math.min(raw.endsWith("%") ? r.width * parseFloat(raw) / 100 : parseFloat(raw), r.width / 2, r.height / 2), cs.backgroundColor);
+      box(r, Math.min(raw.endsWith("%") ? r.width * parseFloat(raw) / 100 : parseFloat(raw), r.width / 2, r.height / 2), cs.backgroundColor);
     }
     for (const node of el.childNodes) {
       if (node.nodeType === 1) { visit(node); continue; }
